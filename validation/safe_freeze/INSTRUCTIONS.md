@@ -24,3 +24,11 @@ See the repository-root design and license notes. The benchmark uses fixed
 owned workers and never-executed hook bytes; memory/handle peaks are bounded
 observations. Unsafe comparison mode is explicitly not safety-equivalent.
 All failed child results are retained, never retried silently.
+
+The stress driver treats natural thread-race refusals as explicit aborted
+transactions only if original target bytes, pending queue intent and complete
+peer cleanup are proved. It logs each refusal, stops/join churn, cancels the
+queue, verifies rollback and retires the same engine before a new transaction.
+Stable benchmark workloads still require every operation to return MH_OK.
+Handle accounting starts after OS/hardware metadata collection, retains the raw
+process-start count and checks zero handle growth in every completed cycle.

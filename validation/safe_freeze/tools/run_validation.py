@@ -63,8 +63,9 @@ def main():
                 for hooks in [1, 4, 11]:
                     cases.append(('workload_' + variant, [threads, hooks, args.samples, method]))
     if args.stress:
-        for scenario in ['steady', 'churn', 'held', 'abort']:
+        for scenario in ['steady', 'held', 'abort']:
             cases.append(('workload_candidate_strict', [16, 11, args.samples, 0, scenario]))
+        cases.append(('churn_contracts', [args.samples]))
         for _ in range(20):
             cases.append(('failure_injection', []))
     for index, (name, arguments) in enumerate(cases):
