@@ -84,3 +84,95 @@ jobs:
             validation/safe_freeze/build/upstream/CMakeCache.txt
             validation/safe_freeze/build/upstream/**/*.exe
             validation/safe_freeze/build/upstream/**/*.dll
+  clang-cl:
+    name: ClangCL ${{ matrix.architecture }} ${{ matrix.configuration }}
+    runs-on: windows-2022
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [x64]
+        configuration: [Release]
+    steps:
+      - name: Preserve source bytes
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Verify exact sources and owner licensing authorization
+        run: python -B tools/verify_inputs.py --root '${{ github.workspace }}'
+      - name: Prepare isolated negative controls
+        run: python -B tools/prepare_controls.py --candidate-root '${{ github.workspace }}'
+      - name: Detect installed Visual Studio clang-cl toolset
+        id: clang
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $compilers = @(& $vswhere -latest -products '*' -version '[17.0,18.0)' -find 'VC\Tools\Llvm\**\clang-cl.exe')
+          $available = $compilers.Count -gt 0
+          New-Item -ItemType Directory -Force build/native | Out-Null
+          @{ available=$available; toolset='ClangCL'; compiler_paths=$compilers } | ConvertTo-Json | Set-Content -Encoding utf8 build/native/toolchain-availability.json
+          if ($available) { 'available=true' >> $env:GITHUB_OUTPUT }
+          else {
+            'available=false' >> $env:GITHUB_OUTPUT
+            'ClangCL: NOT_RUN; Visual Studio toolset is not installed.' >> $env:GITHUB_STEP_SUMMARY
+          }
+          exit 0
+      - name: Configure independent implementation graphs
+        if: steps.clang.outputs.available == 'true'
+        run: cmake -S . -B build/native -G 'Visual Studio 17 2022' -A '${{ matrix.architecture }}' -T ClangCL -DSF_CANDIDATE_ROOT='${{ github.workspace }}'
+      - name: Build official, strict, compatible-default and comparison graphs
+        if: steps.clang.outputs.available == 'true'
+        run: cmake --build build/native --config '${{ matrix.configuration }}' --parallel 3
+      - name: Native regression, bounded stress and comparative workloads
+        if: steps.clang.outputs.available == 'true'
+        shell: pwsh
+        run: |
+          $parameters = @('-B','tools/run_validation.py','--build','build/native/${{ matrix.configuration }}',
+              '--output','build/native-results','--samples','50','--stress','--controls')
+          python @parameters
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Configure the actual adapted upstream CMake project
+        if: steps.clang.outputs.available == 'true'
+        run: cmake -S '${{ github.workspace }}' -B build/upstream -G 'Visual Studio 17 2022' -A '${{ matrix.architecture }}' -T ClangCL -DMINHOOK_SAFE_FREEZE=ON -DMINHOOK_BUILD_SAFE_FREEZE_TESTS=ON -DBUILD_SHARED_LIBS=ON
+      - name: Build the actual adapted upstream CMake project
+        if: steps.clang.outputs.available == 'true'
+        run: cmake --build build/upstream --config '${{ matrix.configuration }}' --parallel 3
+      - name: Execute adapted upstream CTest regressions
+        if: steps.clang.outputs.available == 'true'
+        run: ctest --test-dir build/upstream -C '${{ matrix.configuration }}' --output-on-failure --output-junit '${{ github.workspace }}/validation/safe_freeze/build/upstream/junit.xml'
+      - name: Preserve exact candidate, binaries and every execution result
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: safe-freeze-clangcl-${{ matrix.architecture }}-${{ matrix.configuration }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            SOURCE_MANIFEST.json
+            CMakeLists.txt
+            LICENSE.SAFE_FREEZE
+            LICENSE.txt
+            validation/safe_freeze/inputs/official/LICENSE.txt
+            validation/safe_freeze/inputs/comparison/LICENSE.txt
+            SAFE_FREEZE_*.md
+            src/
+            include/
+            tests/safe_freeze/
+            validation/safe_freeze/reports/
+            validation/safe_freeze/build/native-results/
+            validation/safe_freeze/build/native/toolchain-availability.json
+            validation/safe_freeze/build/native/CMakeCache.txt
+            validation/safe_freeze/build/native/CMakeFiles/CMakeConfigureLog.yaml
+            validation/safe_freeze/build/native/${{ matrix.configuration }}/*.exe
+            validation/safe_freeze/build/native/**/*.vcxproj
+            validation/safe_freeze/build/upstream/Testing/Temporary/
+            validation/safe_freeze/build/upstream/junit.xml
+            validation/safe_freeze/build/upstream/CMakeCache.txt
+            validation/safe_freeze/build/upstream/**/*.exe
+            validation/safe_freeze/build/upstream/**/*.dll

@@ -10,9 +10,10 @@
 
 static HANDLE stop_event;
 static volatile LONG ticks;
+static volatile LONG workers_ready;
 static DWORD WINAPI worker(void *argument)
 {
-    (void)argument;
+    (void)argument;InterlockedIncrement(&workers_ready);
     while (WaitForSingleObject(stop_event, 0) == WAIT_TIMEOUT)
     {
         InterlockedIncrement(&ticks);
@@ -102,6 +103,9 @@ int main(int argc,char **argv)
     required(GetProcessMemoryInfo(GetCurrentProcess(),(PROCESS_MEMORY_COUNTERS*)&initial_memory,sizeof initial_memory),"workload memory baseline after metadata");
     stop_event=CreateEventW(NULL,TRUE,FALSE,NULL);required(stop_event!=NULL,"stop event");
     for(i=0;i<threads;++i){peers[i]=CreateThread(NULL,0,worker,NULL,0,NULL);required(peers[i]!=NULL,"worker creation");}
+    {DWORD started=GetTickCount();
+     while(workers_ready!=(LONG)threads&&GetTickCount()-started<5000)Sleep(1);
+     required(workers_ready==(LONG)threads,"all benchmark workers completed startup before baseline/freeze");}
     if(held)required(SuspendThread(peers[0])!=(DWORD)-1,"external suspension");
     arena=VirtualAlloc(NULL,4096,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);required(arena!=NULL,"fixture arena");
     memset(arena,0x90,4096);
@@ -134,7 +138,9 @@ int main(int argc,char **argv)
         if(memory.WorkingSetSize>peak_working)peak_working=memory.WorkingSetSize;
         if(memory.PrivateUsage>peak_private)peak_private=memory.PrivateUsage;
         t[9]=counter();status(MH_Uninitialize(),"uninitialize");
-        required(handles()==before_first,"zero engine handle growth in each completed cycle, including warm-up");
+        {DWORD observed=handles();
+         if(observed!=before_first)fprintf(stderr,"CYCLE_HANDLE_MISMATCH variant=%s cycle=%u before=%lu after=%lu ready=%ld expected_ready=%u\n",SAFE_FREEZE_VARIANT_LABEL,i,before_first,observed,workers_ready,threads);
+         required(observed==before_first,"zero engine handle growth in each completed cycle, including warm-up");}
         if(i==0)after_first=handles();
         if(i==warmup)after_warmup=handles();
         if(i==samples+warmup-1)after_last=handles();
