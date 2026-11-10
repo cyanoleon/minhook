@@ -10,5 +10,6 @@
   "independent_implementation_claim": false,
   "independent_legal_ownership_audit": "NOT_PERFORMED; this contribution relies on the owner authorization",
   "upstream_submission_authorized_now": false,
-  "remaining_gate": "Required native Windows/MSVC regression, suspended-peer, benchmark and stress verification"
+  "remaining_gate": "Required native Windows/MSVC regression, suspended-peer, benchmark and stress verification",
+  "work_name": "Brownfield SAFE-FREEZE"
 }

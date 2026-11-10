@@ -1,11 +1,12 @@
 {
   "base": "8af6b4acae5a9388fd742b56fa79ece89d96f823",
-  "candidate_commit": "a9081447b9fe037bf341b466d786400cd91d831c",
+  "candidate_commit": "9c4753f771b437898025bd75912f2ac1f063cd07",
   "branch": "safe-freeze-upstream-candidate-20261110",
   "publication": "NOT_PUBLISHED",
   "owner_license_authorization": "reports/license-authorization.json",
   "initial_candidate_commit": "063c281cf31f2a259cb65c274d150614bbbf67a7",
   "prior_candidate_commits": [
-    "c83367957d20816ae38a2357421e151e3d8f36f4"
+    "c83367957d20816ae38a2357421e151e3d8f36f4",
+    "a9081447b9fe037bf341b466d786400cd91d831c"
   ]
 }
