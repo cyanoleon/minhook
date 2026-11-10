@@ -97,7 +97,7 @@
     "tests/safe_freeze/failure_injection.c": "a9dd4be5639bf9f24ab645a20d89e1315deba387c8fcc94752d85c220cb2e349",
     "tests/safe_freeze/real_peer.cpp": "4f1806c0ba5a04733dd22f01a479ed485527cf2d9b2b32de41adb14247963960",
     "validation/safe_freeze/CMakeLists.txt": "07b3f43e0cb5047ddc51a78b0d9f1fe127e85f0294e250345280f29e5661f060",
-    "validation/safe_freeze/INSTRUCTIONS.md": "878d794e3b1f62b7f6cdabd67838b6d3920639d6148015877a079e9e5b2a2c18",
+    "validation/safe_freeze/INSTRUCTIONS.md": "bfcfd45fd02c13299ea438c3e19a6d7471a42b7c8fdb8c2d1923e8dd3915811c",
     "validation/safe_freeze/inputs/comparison/.editorconfig": "476d7121856a09da8428a459abf64a546fe3ec46313555c8534c538fb5be3ba8",
     "validation/safe_freeze/inputs/comparison/.github/workflows/msbuild.yml": "5ab6103afa6b4c902f1911a7daa85231a6746431095dc4a212abfa2182490ec7",
     "validation/safe_freeze/inputs/comparison/.gitignore": "6cdc5e29485b58abff4bd0bfe10a851108802a4ad72c8e52a732ac7e4ce4e35c",

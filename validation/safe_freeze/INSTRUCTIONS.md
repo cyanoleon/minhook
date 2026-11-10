@@ -1,7 +1,9 @@
 # Fork-only native validation
 
-The contribution branch is `safe-freeze-upstream-candidate-20261110` at
-`063c281cf31f2a259cb65c274d150614bbbf67a7`. This separate branch adds
+The Brownfield SAFE-FREEZE contribution branch is
+`safe-freeze-upstream-candidate-20261110`; its exact revision is recorded in
+the repository-root `SOURCE_MANIFEST.json` as `contribution_commit`.
+This separate branch adds
 comparison/benchmark/stress infrastructure without changing contribution inputs.
 The workflow verifies each compiled contribution input against that exact commit.
 Official and m417z inputs are byte-exact, independently pinned snapshots.
