@@ -1,0 +1,14 @@
+{
+  "schema": "safe-freeze-license-authorization.v1",
+  "status": "OWNER_AUTHORIZED_BSD_2_CLAUSE",
+  "record_date_utc": "2026-11-10",
+  "authority": "Project owner statement in the task conversation",
+  "statement_english_translation": "The BSD license is not a problem. Since we own the code, we can release the fork under the BSD license.",
+  "scope": "Brownfield-derived SAFE-FREEZE implementation, subsequent project additions and adapted candidate tests/supporting contribution",
+  "license_for_candidate_additions": "BSD-2-Clause",
+  "original_inputs_rewritten": false,
+  "independent_implementation_claim": false,
+  "independent_legal_ownership_audit": "NOT_PERFORMED; this contribution relies on the owner authorization",
+  "upstream_submission_authorized_now": false,
+  "remaining_gate": "Required native Windows/MSVC regression, suspended-peer, benchmark and stress verification"
+}

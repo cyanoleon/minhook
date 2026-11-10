@@ -1,0 +1,12 @@
+[
+  {
+    "architecture": "x86_64",
+    "preprocessed_default_engine": "IDENTICAL",
+    "normalized_sha256": "dfae2ff88e7d4161d5a7da5533037c3141d6ce4fd4a4bbf800068ca04fb9317d"
+  },
+  {
+    "architecture": "i686",
+    "preprocessed_default_engine": "IDENTICAL",
+    "normalized_sha256": "f485f0cf6ad8ca35bfe595a0ba1a7d524d0f97cce6670682e0ee317e3a04f8f4"
+  }
+]
