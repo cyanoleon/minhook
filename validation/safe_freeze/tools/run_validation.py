@@ -49,6 +49,7 @@ def main():
     parser.add_argument('--matrix', action='store_true')
     parser.add_argument('--stress', action='store_true')
     parser.add_argument('--controls', action='store_true')
+    parser.add_argument('--diagnostic', action='store_true')
     args = parser.parse_args()
     if not args.wine and os.name != 'nt':
         parser.error('Native execution requires Windows; select --wine for separate compatibility evidence')
@@ -56,6 +57,9 @@ def main():
     evidence = 'wine-compatibility-not-native' if args.wine else 'windows-native'
     rows = []
     cases = [('failure_injection', []), ('real_peer', [])]
+    if args.diagnostic:
+        evidence += '-diagnostic-not-full-acceptance'
+        cases += [('workload_' + variant, [4, 11, 3, method]) for variant, method in [('official', 0), ('candidate_default', 0), ('candidate_strict', 0), ('comparison', 0), ('comparison', 1), ('comparison', 2)]]
     if args.matrix:
         for variant, method in [('official', 0), ('candidate_default', 0), ('candidate_strict', 0),
                                 ('comparison', 0), ('comparison', 1), ('comparison', 2)]:
