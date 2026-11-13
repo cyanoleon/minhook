@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +34,9 @@ def main():
             actual = subprocess.check_output(['git', '-C', str(source_root), 'hash-object',
                                              '--no-filters', name], text=True).strip()
             assert actual == expected, 'Contribution input differs: ' + name
+    subprocess.run([sys.executable, '-B', str(source_root / 'tests/safe_freeze/check_default_sources.py'),
+                    '--root', str(source_root), '--official-root',
+                    str(source_root / manifest.get('official_root', 'inputs/official'))], check=True)
     print(json.dumps({'result': 'PASS', 'files': len(manifest['files']),
                       'licensing_basis': authorization['status'], 'abi_header_and_exports': 'UNCHANGED'}))
 

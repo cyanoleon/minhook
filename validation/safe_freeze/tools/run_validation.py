@@ -55,7 +55,10 @@ def main():
     args.output.mkdir(parents=True, exist_ok=False)
     evidence = 'wine-compatibility-not-native' if args.wine else 'windows-native'
     rows = []
-    cases = [('failure_injection', []), ('real_peer', []), ('live_calls', [])]
+    cases = [('failure_injection', []), ('real_peer', []), ('live_calls', []),
+             ('completion', []), ('retirement_peer', []),
+             ('workload_official', [4, 4, args.samples, 0]),
+             ('workload_candidate_default', [4, 4, args.samples, 0])]
     if args.matrix:
         for variant, method in [('official', 0), ('candidate_default', 0), ('candidate_strict', 0),
                                 ('comparison', 0), ('comparison', 1), ('comparison', 2)]:

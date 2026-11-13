@@ -5,7 +5,7 @@ import argparse
 import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
-GUARD = '''    if (g_hHeap != NULL && !RetryRetainedThreadOwnership())
+GUARD = '''    if (g_hHeap != NULL && (g_shutdownPending || !RetryRetainedThreadOwnership()))
     {
         LeaveSpinLock();
         return MH_ERROR_MEMORY_PROTECT;
