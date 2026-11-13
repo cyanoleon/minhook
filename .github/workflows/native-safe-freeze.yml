@@ -2,7 +2,7 @@
 name: MinHook SAFE-FREEZE native validation
 on:
   push:
-    branches: [safe-freeze-native-validation-20261110]
+    branches: [safe-freeze-native-validation-20261110, x64-hardening-native-validation-20261113]
   workflow_dispatch:
 defaults:
   run:
@@ -50,7 +50,7 @@ jobs:
           python @parameters
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Configure the actual adapted upstream CMake project
-        run: cmake -S '${{ github.workspace }}' -B build/upstream -G 'Visual Studio 17 2022' -A '${{ matrix.architecture }}' -DMINHOOK_SAFE_FREEZE=ON -DMINHOOK_BUILD_SAFE_FREEZE_TESTS=ON -DBUILD_SHARED_LIBS=ON
+        run: cmake -S '${{ github.workspace }}' -B build/upstream -G 'Visual Studio 17 2022' -A '${{ matrix.architecture }}' -DMINHOOK_SAFE_FREEZE=ON -DMINHOOK_BUILD_SAFE_FREEZE_TESTS=ON -DMINHOOK_BUILD_X64_HARDENING_TESTS=${{ matrix.architecture == 'x64' && 'ON' || 'OFF' }} -DBUILD_SHARED_LIBS=ON
       - name: Build the actual adapted upstream CMake project
         run: cmake --build build/upstream --config '${{ matrix.configuration }}' --parallel 3
       - name: Execute adapted upstream CTest regressions
@@ -84,6 +84,7 @@ jobs:
             src/
             include/
             tests/safe_freeze/
+            tests/hardening/
             validation/safe_freeze/reports/
             validation/safe_freeze/build/native-results/
             validation/safe_freeze/build/native/CMakeCache.txt
@@ -153,7 +154,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Configure the actual adapted upstream CMake project
         if: steps.clang.outputs.available == 'true'
-        run: cmake -S '${{ github.workspace }}' -B build/upstream -G 'Visual Studio 17 2022' -A '${{ matrix.architecture }}' -T ClangCL -DMINHOOK_SAFE_FREEZE=ON -DMINHOOK_BUILD_SAFE_FREEZE_TESTS=ON -DBUILD_SHARED_LIBS=ON
+        run: cmake -S '${{ github.workspace }}' -B build/upstream -G 'Visual Studio 17 2022' -A '${{ matrix.architecture }}' -T ClangCL -DMINHOOK_SAFE_FREEZE=ON -DMINHOOK_BUILD_SAFE_FREEZE_TESTS=ON -DMINHOOK_BUILD_X64_HARDENING_TESTS=ON -DBUILD_SHARED_LIBS=ON
       - name: Build the actual adapted upstream CMake project
         if: steps.clang.outputs.available == 'true'
         run: cmake --build build/upstream --config '${{ matrix.configuration }}' --parallel 3
@@ -192,6 +193,7 @@ jobs:
             src/
             include/
             tests/safe_freeze/
+            tests/hardening/
             validation/safe_freeze/reports/
             validation/safe_freeze/build/native-results/
             validation/safe_freeze/build/native/toolchain-availability.json
