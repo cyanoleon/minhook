@@ -198,6 +198,7 @@ BOOL CreateTrampolineFunction(PTRAMPOLINE ct)
 
         SIZE_T    readableSize;
 
+        memset(instBuf, 0, sizeof(instBuf));
         readableSize = CopyReadableCode(instBuf, (LPCVOID)pOldInst, sizeof(instBuf));
         if (readableSize == 0)
             return FALSE;
@@ -345,6 +346,12 @@ BOOL CreateTrampolineFunction(PTRAMPOLINE ct)
 
             // Complete the function if not in a branch.
             finished = (pOldInst >= jmpDest);
+        }
+        else if (hs.flags & F_RELATIVE)
+        {
+            // Never copy an unhandled PC-relative instruction (e.g. XBEGIN)
+            // with its original displacement into a different code address.
+            return FALSE;
         }
 
         // Can't alter the instruction length in a branch.
