@@ -4,6 +4,12 @@ Code revision: `3c7c88ca220d9105cd45edf69153e7e5a310bc3c`.
 Native validation revision: `89379b862d6302f50a38ca665b5959b0b86c5e2a`.
 [Native run 43390466258](https://github.com/cyanoleon/minhook/actions/runs/43390466258).
 
+All five native cells completed successfully: MSVC Win32/x64 Debug/Release
+and ClangCL x64 Release. Across them, 335 isolated positive children, 15
+expected-failure controls, 28 standalone CTests and ten DLL export checks
+passed. The downloaded artifacts for all five cells were independently
+verified against their pinned sources and executable hashes.
+
 This development branch extends the existing strict-freeze engine with common
 relocator fixes in both strict modes. It is separate from upstream PR #179;
 that PR retains its existing contribution branch and measurements.
